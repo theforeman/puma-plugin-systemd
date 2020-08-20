@@ -127,9 +127,17 @@ Puma::Plugin.create do
       end
     end
 
+    def max_threads
+      if clustered?
+        @stats["worker_status"].first["last_status"].fetch("max_threads", 0)
+      else
+        @stats.fetch("max_threads", 0)
+      end
+    end
+
     def to_s
       if clustered?
-        "puma #{Puma::Const::VERSION} cluster: #{booted_workers}/#{workers} workers: #{running} threads, #{backlog} backlog"
+        "puma #{Puma::Const::VERSION} cluster: #{booted_workers}/#{workers} workers: #{running} threads, #{backlog} backlog, #{max_threads} max_threads"
       else
         "puma #{Puma::Const::VERSION}: #{running} threads, #{backlog} backlog"
       end
